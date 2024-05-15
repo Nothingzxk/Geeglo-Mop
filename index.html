@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Consumption of Countries</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            cursor: pointer; /* Change cursor to pointer */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Oil Consumption of Contries</h1>
+    </header>
+    <div id="map"></div>
+    <div id="guess-info">
+        <h2>Make Your Guess!</h2>
+        <p>Click on the map to make your guess.</p>
+    </div>
+    <footer>
+        <button id="next-round">Next Round</button>
+    </footer>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var map = L.map('map').setView([0, 0], 2);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker; // Variable to store the marker for the guessed location
+
+            var oilFactsByCountry = {
+                "United States": [
+                    "20.3%",
+                    "20.3%"
+                ],
+                "Japan": [
+                    "4.1%",
+                    "4.1%"
+                ],
+                "Saudi Arabia": [
+                    "3.4%",
+                    "3.4%"
+                ],
+                "Russia": [
+                    "3.7%",
+                    "3.7%"
+                ],
+                "China": [
+                    "13.2%",
+                    "13.2%"
+                ],
+                "India": [
+                    "4.6%",
+                    "4.6%"
+                ],
+                "Brazil": [
+                    "3.1%",
+                    "3.1%"
+                ],
+                "South Korea": [
+                    "2.7%",
+                    "2.7%"
+                ],
+                "Canada": [
+                    "2.6%",
+                    "2.6%"
+                ],
+                "Germany": [
+                    "2.5%",
+                    "2.5%"
+                ],
+                "Mexico": [
+                    "2.1%",
+                    "2.1%"
+                ],
+                "Iran": [
+                    "1.9%",
+                    "1.9%"
+                ],
+                "France": [
+                    "1.8%",
+                    "1.8%"
+                ],
+                "Indonesia": [
+                    "1.7%",
+                    "1.7%"
+                ],
+                "United Kingdom": [
+                    "1.6%",
+                    "1.6%"
+                ],
+                "Singapore": [
+                    "1.4%",
+                    "1.4%"
+                ],
+                "Thailand": [
+                    "1.3%",
+                    "1.3%"
+                ],
+                "Spain": [
+                    "1.3%",
+                    "1.3%"
+                ],
+                "Italy": [
+                    "1.3%",
+                    "1.3%"
+                ],
+                "Australia": [
+                    "1.1%",
+                    "1.1%"
+                ],
+                "Taiwan": [
+                    "1%",
+                    "1%"
+                ],
+                "Turkey": [
+                    "1%",
+                    "1%"
+                ],
+                "Netherlands": [
+                    "1%",
+                    "1%"
+                ],
+                "Egypt": [
+                    "0.9%",
+                    "0.9%"
+                ],
+                "Egypt": [
+                    "0.9%",
+                    "0.9%"
+                ],
+                "Iraq": [
+                    "0.9%",
+                    "0.9%"
+                ],
+                "Argentina": [
+                    "0.7%",
+                    "0.7%"
+                ],
+                "Malaysia": [
+                    "0.7%",
+                    "0.7%"
+                ],
+                "South Africa": [
+                    "0.7%",
+                    "0.7%"
+                ],
+                "Belgium": [
+                    "0.7%",
+                    "0.7%"
+                ],
+                "Venezuela": [
+                    "0.6%",
+                    "0.6%"
+                ],
+                "Poland": [
+                    "0.6%",
+                    "0.6%"
+                ],
+                "Pakistan": [
+                    "0.6%",
+                    "0.6%"
+                ],
+                "Vietnam": [
+                    "0.5%",
+                    "0.5%"
+                ],
+                "Algeria": [
+                    "0.4%",
+                    "0.4%"
+                ],
+                "Philippines": [
+                    "0.4%",
+                    "0.4%"
+                ],
+                "Nigeria": [
+                    "0.4%",
+                    "0.4%"
+                ],
+                "Hong Kong": [
+                    "0.4%",
+                    "0.4%"
+                ],
+                "Kuwait": [
+                    "0.4%",
+                    "0.4%"
+                ],
+                "Chile": [
+                    "0.4%",
+                    "0.4%"
+                ],
+                "Kazakhstan": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Sweden": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Greece": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Morocco": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Austria": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Ecuador": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Ecuador": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Peru": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Ukraine": [
+                    "0.3%",
+                    "0.3%"
+                ],
+                "Portugal": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Israel": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Switzerland": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Switzerland": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Libya": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Finland": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Norway": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Romania": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Oman": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Czechia": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Quatar": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "New Zealand": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Denmark": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Hungary": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Panama": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Lebanon": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Cuba": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Ireland": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Turkmenistan": [
+                    "0.2%",
+                    "0.2%"
+                ],
+                "Syria": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Sudan": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Belarus": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Dominican Republic": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Angola": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Sri Lanka": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Myanmar": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Jordan": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Kenya": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Bangladesh": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Bulgaria": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Tunisia": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Puerto Rico": [
+                    "0.1%",
+                    "0.1%"
+                ],
+                "Azerbaijan": [
+                    "0.099%",
+                    "0.099%"
+                ],
+                "Guatemala": [
+                    "0.096%",
+                    "0.096%"
+                ],
+                "Bolivia": [
+                    "0.093%",
+                    "0.093%"
+                ],
+                "Ghana": [
+                    "0.091%",
+                    "0.091%"
+                ],
+                "Slovakia": [
+                    "0.084%",
+                    "0.084%"
+                ],
+                "Gibraltar": [
+                    "0.077%",
+                    "0.077%"
+                ],
+                "Serbia": [
+                    "0.076%",
+                    "0.076%"
+                ],
+                "Ethiopia": [
+                    "0.076%",
+                    "0.076%"
+                ],
+                "Tanzania": [
+                    "0.074%",
+                    "0.074%"
+                ],
+                "Croatia": [
+                    "0.071%",
+                    "0.071%"
+                ],
+                "Bahrain": [
+                    "0.064%",
+                    "0.064%"
+                ],
+                "Lithuania": [
+                    "0.063%",
+                    "0.063%"
+                ],
+                "Yemen": [
+                    "0.062%",
+                    "0.062%"
+                ],
+                "Honduras": [
+                    "0.06%",
+                    "0.06%"
+                ],
+                "Trinidad and Tobago": [
+                    "0.059%",
+                    "0.059%"
+                ],
+                "Luxembourg": [
+                    "0.058%",
+                    "0.058%"
+                ],
+                "Costa Rica": [
+                    "0.057%",
+                    "0.057%"
+                ],
+                "Jamaica": [
+                    "0.056%",
+                    "0.056%"
+                ],
+                "Uruguay": [
+                    "0.055%",
+                    "0.055%"
+                ],
+                "Slovenia": [
+                    "0.054%",
+                    "0.054%"
+                ],
+
+
+
+
+
+
+
+                // Add more countries and associated oil facts here
+            };
+
+            function getRandomLocation() {
+                var lat = Math.random() * 180 - 90; // Random latitude between -90 and 90
+                var lng = Math.random() * 360 - 180; // Random longitude between -180 and 180
+                return { lat: lat, lng: lng };
+            }
+
+            function showNextRound() {
+                var randomLocation = getRandomLocation();
+                if (marker) {
+                    marker.removeFrom(map); // Remove the previous marker
+                }
+                marker = L.marker([randomLocation.lat, randomLocation.lng], { draggable: true }).addTo(map);
+                document.getElementById('guess-info').innerHTML = '<h2>Make Your Guess!</h2><p>Click on the map to make your guess.</p>';
+
+                marker.on('dragend', function() {
+                    var guessedLatLng = marker.getLatLng();
+                    var actualLatLng = [randomLocation.lat, randomLocation.lng];
+                    var distance = marker.getLatLng().distanceTo(L.latLng(randomLocation.lat, randomLocation.lng));
+                    var countryName = "Unknown";
+                    // Use reverse geocoding to get the country name based on the guessed location
+                    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + guessedLatLng.lat + '&lon=' + guessedLatLng.lng)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.address && data.address.country) {
+                            countryName = data.address.country;
+                        }
+                        var randomFacts = oilFactsByCountry[countryName] || [];
+                        var randomFact = randomFacts[Math.floor(Math.random() * randomFacts.length)];
+                        document.getElementById('guess-info').innerHTML = '<h2>Result</h2><p>You guessed: ' + guessedLatLng.lat.toFixed(2) + ', ' + guessedLatLng.lng.toFixed(2) + '</p><p>Actual location: ' + randomLocation.lat.toFixed(2) + ', ' + randomLocation.lng.toFixed(2) + '</p><p>Distance: ' + distance.toFixed(2) + ' meters</p><p>Oil Consumption (' + countryName + '): ' + randomFact + '</p>';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching country name:', error);
+                        var randomFact = "Oil plays a crucial role in the global economy and geopolitics.";
+                        document.getElementById('guess-info').innerHTML = '<h2>Result</h2><p>You guessed: ' + guessedLatLng.lat.toFixed(2) + ', ' + guessedLatLng.lng.toFixed(2) + '</p><p>Actual location: ' + randomLocation.lat.toFixed(2) + ', ' + randomLocation.lng.toFixed(2) + '</p><p>Distance: ' + distance.toFixed(2) + ' meters</p><p>Oil Consumption: ' + randomFact + '</p>';
+                    });
+                });
+            }
+
+            document.getElementById('next-round').addEventListener('click', function() {
+                showNextRound();
+            });
+
+            showNextRound();
+        });
+    </script>
+</body>
+</html>
+
